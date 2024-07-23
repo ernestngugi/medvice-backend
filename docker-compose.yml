@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  redis:
+    container_name: "redis"
+    image: redis:latest
+    volumes:
+      - data_redis:/data
+    ports:
+      - 6380:6379
+    command: redis-server --requirepass password
+
+  postgres:
+    image: postgres:16
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_DB=medvice
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=medvice
+    volumes:
+      - data_postgres:/var/lib/postgresql/data
+
+volumes:
+  data_postgres:
+  data_redis:
