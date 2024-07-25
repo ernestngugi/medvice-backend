@@ -40,6 +40,7 @@ require (
 	github.com/gin-contrib/gzip v1.0.1
 	github.com/gin-gonic/contrib v0.0.0-20240508051311-c1c6bf0061b0
 	github.com/gin-gonic/gin v1.10.0
+	github.com/gomodule/redigo v1.9.2
 	github.com/google/uuid v1.6.0
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/joho/godotenv v1.5.1
