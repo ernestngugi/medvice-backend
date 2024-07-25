@@ -126,5 +126,19 @@ func TestTodoRepository(t *testing.T) {
 			So(foundTodo1.CreatedAt, ShouldNotBeZeroValue)
 			So(foundTodo1.UpdatedAt, ShouldNotBeZeroValue)
 		})
+
+		Convey("can delete a todo", func ()  {
+			
+			todo, err := CreateTodo(ctx, dB)
+			So(err, ShouldBeNil)
+
+			err = todoRepository.DeleteTodo(ctx, dB, todo.ID)
+			So(err, ShouldBeNil)
+
+			_, err = todoRepository.TodoByID(ctx, dB, todo.ID)
+			So(err, ShouldNotBeNil)
+
+			So(err.Error(), ShouldContainSubstring, "sql: no rows in result set")
+		})
 	}))
 }
