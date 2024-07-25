@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ernestngugi/medvice-backend/internal/db"
+	"github.com/ernestngugi/medvice-backend/internal/providers"
 	"github.com/ernestngugi/medvice-backend/internal/web/router"
 	"github.com/joho/godotenv"
 )
@@ -36,8 +37,17 @@ func main() {
 	dB := db.InitDB()
 	defer dB.Close()
 
+	redisConfig := &providers.RedisConfig{
+		IdleTimeout: 2 * time.Minute,
+		MaxActive:   10,
+		MaxIdle:     5,
+	}
+
+	redisManager := providers.NewRedisProvider(redisConfig)
+
 	appRouter := router.BuildRouter(
 		dB,
+		redisManager,
 	)
 
 	port := os.Getenv("PORT")

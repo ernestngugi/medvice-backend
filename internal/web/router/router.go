@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ernestngugi/medvice-backend/internal/db"
+	"github.com/ernestngugi/medvice-backend/internal/providers"
 	"github.com/ernestngugi/medvice-backend/internal/repository"
 	"github.com/ernestngugi/medvice-backend/internal/services"
 	"github.com/ernestngugi/medvice-backend/internal/web/api/todo"
@@ -18,6 +19,7 @@ type AppRouter struct {
 
 func BuildRouter(
 	dB db.DB,
+	redisManager providers.Redis,
 ) *AppRouter {
 
 	if os.Getenv("ENVIRONMENT") == "development" {
