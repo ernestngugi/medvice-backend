@@ -7,6 +7,7 @@ import (
 
 	"github.com/ernestngugi/medvice-backend/internal/db"
 	"github.com/ernestngugi/medvice-backend/internal/forms"
+	"github.com/ernestngugi/medvice-backend/internal/mocks"
 	"github.com/ernestngugi/medvice-backend/internal/repository"
 	"github.com/ernestngugi/medvice-backend/internal/testutils"
 	. "github.com/smartystreets/goconvey/convey"
@@ -22,7 +23,9 @@ func TestTodoService(t *testing.T) {
 
 	Convey("TestTodoService", t, testutils.WithTestDB(ctx, testDB, func(ctx context.Context, dB db.DB) {
 
-		todoService := NewTestTodoService()
+		redisManager := mocks.NewMockRedisProvider()
+
+		todoService := NewTestTodoService(redisManager)
 
 		Convey("can create a todo", func() {
 

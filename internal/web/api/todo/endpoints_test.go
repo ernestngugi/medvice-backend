@@ -11,6 +11,7 @@ import (
 	"github.com/ernestngugi/medvice-backend/internal/db"
 	"github.com/ernestngugi/medvice-backend/internal/entities"
 	"github.com/ernestngugi/medvice-backend/internal/forms"
+	"github.com/ernestngugi/medvice-backend/internal/mocks"
 	"github.com/ernestngugi/medvice-backend/internal/repository"
 	"github.com/ernestngugi/medvice-backend/internal/services"
 	"github.com/ernestngugi/medvice-backend/internal/testutils"
@@ -27,7 +28,9 @@ func TestTodoEndpoints(t *testing.T) {
 
 	ctx := context.Background()
 
-	todoService := services.NewTestTodoService()
+	redisProvider := mocks.NewMockRedisProvider()
+
+	todoService := services.NewTestTodoService(redisProvider)
 
 	Convey("TestTodoEndpoints", t, testutils.WithTestDB(ctx, testDB, func(ctx context.Context, dB db.DB) {
 
