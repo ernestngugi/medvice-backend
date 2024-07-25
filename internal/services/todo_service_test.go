@@ -91,8 +91,8 @@ func TestTodoService(t *testing.T) {
 			So(updatedTodo.UpdatedAt, ShouldNotEqual, updatedTodo.CreatedAt)
 		})
 
-		Convey("can delete a todo", func ()  {
-			
+		Convey("can delete a todo", func() {
+
 			todo, err := repository.CreateTodo(ctx, dB)
 			So(err, ShouldBeNil)
 
@@ -105,8 +105,8 @@ func TestTodoService(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "sql: no rows in result set")
 		})
 
-		Convey("cannot delete a completed todo", func ()  {
-			
+		Convey("cannot delete a completed todo", func() {
+
 			todo, err := repository.CreateTodo(ctx, dB)
 			So(err, ShouldBeNil)
 
@@ -123,8 +123,8 @@ func TestTodoService(t *testing.T) {
 			So(err.Error(), ShouldEqual, "cannot a todo that has been completed")
 		})
 
-		Convey("can list todos", func ()  {
-			
+		Convey("can list todos", func() {
+
 			todo1, err := repository.CreateTodo(ctx, dB)
 			So(err, ShouldBeNil)
 
@@ -142,6 +142,23 @@ func TestTodoService(t *testing.T) {
 			So(foundTodo1.ID, ShouldEqual, todo1.ID)
 			So(foundTodo2.ID, ShouldEqual, todo2.ID)
 			So(todos.Pagination.Count, ShouldEqual, 2)
+		})
+
+		Convey("can get todo by id", func() {
+
+			todo, err := repository.CreateTodo(ctx, dB)
+			So(err, ShouldBeNil)
+
+			foundTodo, err := todoService.TodoByID(ctx, dB, todo.ID)
+			So(err, ShouldBeNil)
+
+			So(foundTodo.ID, ShouldEqual, todo.ID)
+			So(foundTodo.Title, ShouldEqual, todo.Title)
+			So(foundTodo.Description, ShouldEqual, todo.Description)
+			So(foundTodo.Completed, ShouldBeFalse)
+			So(foundTodo.CompletedAt, ShouldBeZeroValue)
+			So(foundTodo.CreatedAt, ShouldNotBeZeroValue)
+			So(foundTodo.UpdatedAt, ShouldNotBeZeroValue)
 		})
 	}))
 }
