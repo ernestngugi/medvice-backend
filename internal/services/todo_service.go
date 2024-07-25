@@ -18,6 +18,7 @@ type (
 		CompleteTodo(ctx context.Context, dB db.DB, todoID int64) (*entities.Todo, error)
 		CreateTodo(ctx context.Context, dB db.DB, form *forms.CreateTodoForm) (*entities.Todo, error)
 		DeleteTodo(ctx context.Context, dB db.DB, todoID int64) error
+		TodoByID(ctx context.Context, dB db.DB, todoID int64) (*entities.Todo, error)
 		Todos(ctx context.Context, dB db.DB, filter *forms.Filter) (*entities.TodoList, error)
 		UpdateTodo(ctx context.Context, dB db.DB, todoID int64, form *forms.UpdateTodoForm) (*entities.Todo, error)
 	}
@@ -37,6 +38,10 @@ func NewTodoService(todoRepository repository.TodoRepository) TodoService {
 	return &todoService{
 		todoRepository: todoRepository,
 	}
+}
+
+func (s *todoService) TodoByID(ctx context.Context, dB db.DB, todoID int64) (*entities.Todo, error) {
+	return s.todoRepository.TodoByID(ctx, dB, todoID)
 }
 
 func (s *todoService) CreateTodo(ctx context.Context, dB db.DB, form *forms.CreateTodoForm) (*entities.Todo, error) {
