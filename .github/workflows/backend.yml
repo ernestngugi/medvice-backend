@@ -1,0 +1,67 @@
+name: 'backend ci checks'
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'internal/**'
+    pull_request:
+        paths:
+        - 'internal/**'
+
+jobs:
+    check-backend:
+        runs-on: ubuntu-latest
+
+        env:
+            DATABASE_URL: postgres://medvice:password@localhost:5432/medvice_test?sslmode=disable
+            ENVIRONMENT: test
+            GO111MODULE: on
+            GOPROXY: 'https://proxy.golang.org'
+            NODE_ENV: test
+            PORT: 4000
+
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_USER: medvice
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: medvice_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - name: Set up Go 1.22
+              uses: actions/setup-go@v1
+              with:
+                go-version: 1.22
+            - name: Checkout repo
+              uses: actions/checkout@v2
+            - name: Cache Go modules
+              uses: actions/cache@preview
+              with:
+                path: ~/go/pkg/mod
+                key: ${{ runner.os }}-build-${{ hashFiles('**/go.sum') }}
+                restore-keys: |
+                    ${{ runner.OS }}-build-${{ env.cache-name }}-
+                    ${{ runner.OS }}-build-
+                    ${{ runner.OS }}-
+            - name: Install staticcheck
+              run: cd /tmp && go install honnef.co/go/tools/cmd/staticcheck@latest
+            - name: Run static checks
+              run: ~/go/bin/staticcheck ./...
+            - name: Install goose
+              run: cd /tmp && go install github.com/pressly/goose/cmd/goose@latest
+            - name: Run migrations
+              run: ~/go/bin/goose -dir internal/db/migrations postgres ${DATABASE_URL} up
+            - name: Build medv-api
+              run: go build -o medv-api cmd/medv-api/main.go
+            - name: Run unit tests
+              run: go test ./...
