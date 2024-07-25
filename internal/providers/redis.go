@@ -10,6 +10,7 @@ import (
 
 type (
 	Redis interface {
+		Del(key string) error
 		Exists(key string) (bool, error)
 		Get(key string) (interface{}, error)
 		Set(key string, val interface{}) (interface{}, error)
@@ -88,6 +89,11 @@ func (p *AppRedis) Set(
 	val interface{},
 ) (interface{}, error) {
 	return p.do("SET", key, val)
+}
+
+func (p *AppRedis) Del(key string) error {
+	_, err := p.do("DEL", key)
+	return err
 }
 
 func (p *AppRedis) do(
