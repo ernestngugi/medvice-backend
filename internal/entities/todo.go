@@ -15,6 +15,11 @@ type Todo struct {
 	Timestamps
 }
 
+type TodoList struct {
+	Todos      []*Todo    `json:"todos"`
+	Pagination *Pagination `json:"pagination"`
+}
+
 func BuildTodo() *Todo {
 	return &Todo{
 		Title:       faker.RandomString(5),

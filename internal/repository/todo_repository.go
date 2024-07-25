@@ -11,6 +11,7 @@ import (
 
 const (
 	countTodoSQL   = "SELECT COUNT(id) FROM todos"
+	deleteTodoSQL  = "DELETE FROM todos WHERE id = $1"
 	getTodoByIDSQL = selectTodoSQL + " WHERE id = $1"
 	insertTodoSQL  = "INSERT INTO todos (title, description, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id"
 	selectTodoSQL  = "SELECT id, title, description, completed, completed_at, created_at, updated_at FROM todos"
@@ -19,6 +20,7 @@ const (
 
 type (
 	TodoRepository interface {
+		DeleteTodo(ctx context.Context, operations db.SQLOperations, todoID int64) error
 		NumberOfTodos(ctx context.Context, operations db.SQLOperations, filter *forms.Filter) (int, error)
 		Save(ctx context.Context, operations db.SQLOperations, todo *entities.Todo) error
 		TodoByID(ctx context.Context, operations db.SQLOperations, todoID int64) (*entities.Todo, error)
@@ -149,6 +151,24 @@ func (r *todoRepository) NumberOfTodos(
 	}
 
 	return count, nil
+}
+
+func (s *todoRepository) DeleteTodo(
+	ctx context.Context,
+	operations db.SQLOperations,
+	todoID int64,
+) error {
+
+	_, err := operations.ExecContext(
+		ctx,
+		deleteTodoSQL,
+		todoID,
+	)
+	if err != nil {
+		return fmt.Errorf("cannot delete todo error %v", err)
+	}
+
+	return nil
 }
 
 func (r *todoRepository) scanRow(
