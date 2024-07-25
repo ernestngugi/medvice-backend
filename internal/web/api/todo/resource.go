@@ -7,6 +7,7 @@ import (
 	"github.com/ernestngugi/medvice-backend/internal/db"
 	"github.com/ernestngugi/medvice-backend/internal/forms"
 	"github.com/ernestngugi/medvice-backend/internal/services"
+	"github.com/ernestngugi/medvice-backend/internal/web/webutils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -136,7 +137,13 @@ func listTodo(
 ) func(c *gin.Context) {
 	return func(c *gin.Context) {
 
-		todos, err := todoService.Todos(c.Request.Context(), dB, &forms.Filter{})
+		filter, err := webutils.FilterFromContext(c)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false})
+			return
+		}
+
+		todos, err := todoService.Todos(c.Request.Context(), dB, filter)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"success": false})
 			return
