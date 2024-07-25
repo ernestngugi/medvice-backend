@@ -18,3 +18,6 @@ ps:
 
 down:
 	docker-compose down --remove-orphans
+
+test:
+	DATABASE_URL=postgres://medvice:password@localhost:5433/medvice?sslmode=disable go test ./...
