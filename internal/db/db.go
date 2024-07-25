@@ -17,8 +17,10 @@ type SQLOperations interface {
 
 type DB interface {
 	SQLOperations
+	Begin() (*sql.Tx, error)
 	Close() error
 	Ping() error
+	Valid() bool
 }
 
 type RowScanner interface {
@@ -27,6 +29,7 @@ type RowScanner interface {
 
 type AppDB struct {
 	*sql.DB
+	valid bool
 }
 
 func InitDB() DB {
@@ -45,7 +48,8 @@ func initDBWithURL(databaseURL string) DB {
 	}
 
 	db := &AppDB{
-		DB: appDB,
+		DB:    appDB,
+		valid: true,
 	}
 
 	if err := db.Ping(); err != nil {
@@ -53,4 +57,8 @@ func initDBWithURL(databaseURL string) DB {
 	}
 
 	return db
+}
+
+func (db *AppDB) Valid() bool {
+	return db.valid
 }
