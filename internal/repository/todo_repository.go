@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/ernestngugi/medvice-backend/internal/apperror"
 	"github.com/ernestngugi/medvice-backend/internal/db"
 	"github.com/ernestngugi/medvice-backend/internal/entities"
 	"github.com/ernestngugi/medvice-backend/internal/forms"
@@ -53,7 +53,7 @@ func (r *todoRepository) Save(
 			todo.UpdatedAt,
 		).Scan(&todo.ID)
 		if err != nil {
-			return fmt.Errorf("insert todo query error %v", err)
+			return apperror.NewDatabaseError(err)
 		}
 
 		return nil
@@ -70,7 +70,7 @@ func (r *todoRepository) Save(
 		todo.ID,
 	)
 	if err != nil {
-		return fmt.Errorf("update todo query error %v", err)
+		return apperror.NewDatabaseError(err)
 	}
 
 	return nil
@@ -107,7 +107,7 @@ func (r *todoRepository) Todos(
 
 	rows, err := operations.QueryContext(ctx, query, args...)
 	if err != nil {
-		return []*entities.Todo{}, fmt.Errorf("todos query error %v", err)
+		return []*entities.Todo{}, apperror.NewDatabaseError(err)
 	}
 
 	defer rows.Close()
@@ -124,7 +124,7 @@ func (r *todoRepository) Todos(
 	}
 
 	if err := rows.Err(); err != nil {
-		return []*entities.Todo{}, fmt.Errorf("todos rows error %v", err)
+		return []*entities.Todo{}, apperror.NewDatabaseError(err)
 	}
 
 	return todos, nil
@@ -147,7 +147,7 @@ func (r *todoRepository) NumberOfTodos(
 		args...,
 	).Scan(&count)
 	if err != nil {
-		return 0, fmt.Errorf("number of todos query error %v", err)
+		return 0, apperror.NewDatabaseError(err)
 	}
 
 	return count, nil
@@ -165,7 +165,7 @@ func (s *todoRepository) DeleteTodo(
 		todoID,
 	)
 	if err != nil {
-		return fmt.Errorf("cannot delete todo error %v", err)
+		return apperror.NewDatabaseError(err)
 	}
 
 	return nil
@@ -187,7 +187,7 @@ func (r *todoRepository) scanRow(
 		&todo.UpdatedAt,
 	)
 	if err != nil {
-		return &entities.Todo{}, fmt.Errorf("todo scan row error %v", err)
+		return &entities.Todo{}, apperror.NewDatabaseError(err)
 	}
 
 	return &todo, nil
