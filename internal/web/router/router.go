@@ -2,11 +2,13 @@ package router
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/ernestngugi/medvice-backend/internal/db"
 	"github.com/ernestngugi/medvice-backend/internal/repository"
 	"github.com/ernestngugi/medvice-backend/internal/services"
 	"github.com/ernestngugi/medvice-backend/internal/web/api/todo"
+	"github.com/ernestngugi/medvice-backend/internal/web/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +20,14 @@ func BuildRouter(
 	dB db.DB,
 ) *AppRouter {
 
+	if os.Getenv("ENVIRONMENT") == "development" {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	router := gin.Default()
+
+	defaultMiddlewares := middleware.DefaultMiddlewares()
+	router.Use(defaultMiddlewares...)
 
 	appRouter := router.Group("/v1")
 
