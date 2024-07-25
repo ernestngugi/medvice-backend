@@ -20,4 +20,10 @@ down:
 	docker-compose down --remove-orphans
 
 test:
-	DATABASE_URL=postgres://medvice:password@localhost:5433/medvice?sslmode=disable go test ./...
+	godo test -- -e .env.local.test
+
+test-lite:
+	godo test-lite -- -e .env.local.test
+
+coverage:
+	godo coverage -- -e .env.local.test
