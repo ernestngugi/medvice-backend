@@ -27,3 +27,6 @@ test-lite:
 
 coverage:
 	godo coverage -- -e .env.local.test
+
+server:
+	gow run cmd/medv-api/main.go -e .env
